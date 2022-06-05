@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1.4.1
+FROM alpine:3.16.0
+
+RUN addgroup --gid 1001 multipaper && \
+    adduser --home /multipaper --uid 1001 -S -G multipaper multipaper
+
+RUN apk add --no-cache --update libintl=0.21-r2 && \
+    apk add --no-cache --virtual build_deps gettext=0.21-r2 && \
+    cp /usr/bin/envsubst /usr/local/bin/envsubst && \ 
+    apk del build_deps
+
+USER multipaper

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-pufferfish
+  labels:
+    {{- include "multipaper-helm.server.labels" . | nindent 4 }}
+data:
+  pufferfish.yml: |
+    # Pufferfish Configuration
+    # Check out Pufferfish Host for maximum performance server hosting: https://pufferfish.host
+    # Join our Discord for support: https://discord.gg/reZw4vQV9H
+    # Download new builds at https://ci.pufferfish.host/job/Pufferfish
+    info:
+      version: '1.0'
+    inactive-goal-selector-throttle: true
+    enable-async-mob-spawning: false
+    enable-books: true

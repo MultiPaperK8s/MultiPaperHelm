@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-config
+  labels:
+    {{- include "multipaper-helm.server.labels" . | nindent 4 }}
+data:
+  multipaper.yml: |
+    # This is the main configuration file for MultiPaper.
+    # There's quite alot to configure. Read the docs for more information.
+    #
+    # Docs: https://github.com/PureGero/MultiPaper/blob/main/MULTIPAPER_YAML.md
+
+    useLocalPlayerCountForServerIsFullKick: false
+    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-master:{{ .Values.master.service.targetPort }}
+    advertiseToBuiltInProxy: {{ .Values.master.proxy.enabled }}
+    filesToSyncOnStartup:
+    filesToSyncInRealTime:
+    filesToOnlyUploadOnServerStop:
+    ticksPerInactiveEntityTracking: 1
+    interServerCompressionThreshold: 0
+    interServerConsolidationDelay: 0
+    syncScoreboards: true
+    logFileSyncing: true
+    syncJsonFiles: true
+    filesToNotSync:
+    - plugins/bStats
+    bungeecordName: $HOSTNAME

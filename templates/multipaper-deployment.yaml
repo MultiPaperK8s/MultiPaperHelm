@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}
+  labels:
+    {{- include "multipaper-helm.server.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "multipaper-helm.server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "multipaper-helm.server.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ template "multipaper-helm.serviceAccount.name" . }}
+      securityContext:
+          fsGroup: 1001
+          runAsUser: 1001
+          runAsGroup: 1001
+      initContainers:
+        - name: copy-configuration
+          image: multipaper-init:0.0.1
+          command: [ "/bin/sh", "-c", "ls -lisah /tmp/multipaper && /usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/multipaper.yml && cp /tmp/spigot/* /spigot && cp /tmp/airplane/* /ext && cp /tmp/pufferfish/* /ext" ]
+          volumeMounts:
+            - name: multipaper-config
+              mountPath: /tmp/multipaper
+            - name: multipaper-config-data
+              mountPath: /multipaper
+            - name: multipaper-spigot-config
+              mountPath: /tmp/spigot
+            - name: multipaper-spigot-config-data
+              mountPath: /spigot
+            - name: multipaper-pufferfish-config
+              mountPath: /tmp/pufferfish
+            - name: multipaper-airplane-config
+              mountPath: /tmp/airplane
+            - name: multipaper-ext-config-data
+              mountPath: /ext
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.master.image.pullPolicy }}
+          ports:
+            - name: server
+              containerPort: {{ .Values.server.service.port }}
+              protocol: TCP
+          {{- if .Values.server.probes.readinessProbe.startupProbe }}
+          startupProbe:
+            tcpSocket:
+              port: server
+            failureThreshold: {{ .Values.server.probes.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.server.probes.startupProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.server.probes.readinessProbe.timeoutSecond }}
+          readinessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: {{ .Values.server.probes.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.server.probes.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.server.probes.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.server.probes.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.server.probes.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.server.probes.livenessProbe.timeoutSecond }}
+          livenessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: {{ .Values.server.probes.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.server.probes.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.server.probes.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.server.probes.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.server.probes.livenessProbe.timeoutSeconds }}
+          {{- end }}
+          volumeMounts:
+            - name: multipaper-config-data
+              mountPath: /multipaper/multipaper.yml
+              subPath: multipaper.yml
+            - name: multipaper-spigot-config
+              mountPath: /multipaper/eula.txt
+              subPath: eula.txt
+            - name: multipaper-spigot-config-data
+              mountPath: /multipaper/spigot.yml
+              subPath: spigot.yml
+            - name: multipaper-spigot-config-data
+              mountPath: /multipaper/paper.yml
+              subPath: paper.yml
+            - name: multipaper-spigot-config-data
+              mountPath: /multipaper/bukkit.yml
+              subPath: bukkit.yml
+            - name: multipaper-ext-config-data
+              mountPath: /multipaper/pufferfish.yml
+              subPath: pufferfish.yml
+            - name: multipaper-ext-config-data
+              mountPath: /multipaper/airplane.yml
+              subPath: airplane.yml
+      volumes:
+        - name: multipaper-config
+          configMap:
+            name: {{ template "multipaper-helm.fullname" . }}-config
+        - name: multipaper-config-data
+          emptyDir: {}
+        - name: multipaper-spigot-config
+          configMap:
+            name: {{ template "multipaper-helm.fullname" . }}-spigot
+        - name: multipaper-spigot-config-data
+          emptyDir: {}
+        - name: multipaper-pufferfish-config
+          configMap:
+            name: {{ template "multipaper-helm.fullname" . }}-pufferfish
+        - name: multipaper-airplane-config
+          configMap:
+            name: {{ template "multipaper-helm.fullname" . }}-airplane
+        - name: multipaper-ext-config-data
+          emptyDir: {}
