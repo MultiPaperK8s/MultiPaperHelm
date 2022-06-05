@@ -1,0 +1,17 @@
+{{- if .Values.master.proxy.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-master-proxy
+  labels:
+    {{- include "multipaper-helm.master.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.master.proxy.service.type }}
+  ports:
+    - port: {{ .Values.master.proxy.service.port }}
+      targetPort: {{ .Values.master.proxy.service.targetPort }}
+      protocol: TCP
+      name: proxy
+  selector:
+    {{- include "multipaper-helm.master.selectorLabels" . | nindent 4 }}
+{{- end -}}

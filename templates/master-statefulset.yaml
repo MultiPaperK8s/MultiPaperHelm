@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-master
+  labels:
+    {{- include "multipaper-helm.master.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  updateStrategy:
+    type: {{ .Values.server.updateStrategyType }}
+  serviceName: {{ template "multipaper-helm.fullname" . }}-master
+  selector:
+    matchLabels:
+      {{- include "multipaper-helm.master.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "multipaper-helm.master.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ template "multipaper-helm.serviceAccount.name" . }}
+      containers:
+        - name: {{ .Chart.Name }}-master
+          image: "{{ .Values.master.image.repository }}:{{ .Values.master.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.master.image.pullPolicy }}
+          command: [ "java", "-jar", "multipaper-master.jar" ]
+          args: [ "{{ .Values.master.service.port }}", "{{ .Values.master.proxy.service.port }}" ]
+          ports:
+            - name: server
+              containerPort: {{ .Values.master.service.port }}
+              protocol: TCP
+            - name: proxy
+              containerPort: {{ .Values.master.proxy.service.port }}
+              protocol: TCP
+          {{- if .Values.master.probes.readinessProbe.startupProbe }}
+          startupProbe:
+            tcpSocket:
+              port: server
+            failureThreshold: {{ .Values.server.probes.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.server.probes.startupProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.master.probes.readinessProbe.timeoutSecond }}
+          readinessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: {{ .Values.server.probes.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.server.probes.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.server.probes.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.server.probes.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.server.probes.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.master.probes.livenessProbe.timeoutSecond }}
+          livenessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: {{ .Values.server.probes.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.server.probes.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.server.probes.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.server.probes.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.server.probes.livenessProbe.timeoutSeconds }}
+          {{- end }}

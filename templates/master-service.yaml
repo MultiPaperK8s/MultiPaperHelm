@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-master
+  labels:
+    {{- include "multipaper-helm.master.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: {{ .Values.master.service.port }}
+      targetPort: {{ .Values.master.service.targetPort }}
+      protocol: TCP
+      name: server
+  selector:
+    {{- include "multipaper-helm.master.selectorLabels" . | nindent 4 }}

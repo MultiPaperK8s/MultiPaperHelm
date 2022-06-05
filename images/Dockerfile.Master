@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1.4.1
+FROM openjdk:17-alpine3.14
+
+ARG MULTIPAPER_VERSION
+ARG MULTIPAPER_BUILD
+ARG MASTER_VERSION
+
+RUN addgroup --gid 1001 multipaper && \
+    adduser --home /multipaper --uid 1001 -S -G multipaper multipaper
+
+WORKDIR /multipaper
+
+USER multipaper
+ADD --chown=multipaper:multipaper https://multipaper.io/api/v2/projects/multipaper/versions/$MULTIPAPER_VERSION/builds/$MULTIPAPER_BUILD/downloads/MultiPaper-Master-$MASTER_VERSION-all.jar multipaper-master.jar
+
+EXPOSE 35353/tcp
+EXPOSE 25565/tcp
+
+CMD ["java", "-jar", "multipaper-master.jar"]
