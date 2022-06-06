@@ -31,6 +31,7 @@ spec:
             - name: proxy
               containerPort: {{ .Values.master.proxy.service.port }}
               protocol: TCP
+          volumeMounts: {{ .Values.master.persistent.volumeMounts | toYaml | nindent 16 }}
           {{- if .Values.master.probes.readinessProbe.startupProbe }}
           startupProbe:
             tcpSocket:
@@ -58,3 +59,6 @@ spec:
             successThreshold: {{ .Values.master.probes.livenessProbe.successThreshold }}
             timeoutSeconds: {{ .Values.master.probes.livenessProbe.timeoutSeconds }}
           {{- end }}
+  {{- if .Values.master.persistent }}
+  volumeClaimTemplates: {{ .Values.master.persistent.claimTemplates | toYaml | nindent 4}}
+  {{- end }}
