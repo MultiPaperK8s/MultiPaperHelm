@@ -96,41 +96,21 @@ master:
   # but since Minecraft can have other worlds, we decided not to.
   persistent:
     # Defines Volumes (https://kubernetes.io/docs/concepts/storage/volume) to be linked to the master.
-    # A default setup would have world, world_nether and world_the_end mounted.
+    # Persists all the files synced to the master.
     volumeMounts:
-      - name: "world"
-        mountPath: "world"
-      - name: "nether"
-        mountPath: "world_nether"
-      - name: "end"
-        mountPath: "world_the_end"
+      - name: "data"
+        mountPath: "/multipaper/data"
     # Template for Persistent Volume Claims (https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
     # This setup automatically creates Persistent Volumes for you, if no Persistent Volume is found.
     claimTemplates:
       - metadata:
-          name: "world"
+          name: "data"
         spec:
           accessModes: [ "ReadWriteOnce" ]
           storageClassName: null
           resources:
             requests:
-              storage: "10Gi"
-      - metadata:
-          name: "nether"
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: null
-          resources:
-            requests:
-              storage: "10Gi"
-      - metadata:
-          name: "end"
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: null
-          resources:
-            requests:
-              storage: "10Gi"
+              storage: "30Gi"
   
   labels: {}
 
