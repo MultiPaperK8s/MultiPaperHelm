@@ -22,7 +22,7 @@ spec:
       initContainers:
         - name: copy-configuration
           image: multipaper-init:0.0.1
-          command: [ "/bin/sh", "-c", "ls -lisah /tmp/multipaper && /usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/multipaper.yml && cp /tmp/spigot/* /spigot && cp /tmp/airplane/* /ext && cp /tmp/pufferfish/* /ext" ]
+          command: [ "/bin/sh", "-c", "/usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/multipaper.yml && cp /tmp/spigot/* /spigot && cp /tmp/airplane/* /ext && cp /tmp/pufferfish/* /ext" ]
           volumeMounts:
             - name: multipaper-config
               mountPath: /tmp/multipaper
@@ -41,7 +41,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.master.image.pullPolicy }}
+          command: [ "java", "-jar", "/multipaper/multipaper.jar" ]
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           ports:
             - name: server
               containerPort: {{ .Values.server.service.port }}
