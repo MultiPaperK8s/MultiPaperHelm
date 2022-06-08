@@ -22,22 +22,13 @@ spec:
       initContainers:
         - name: copy-configuration
           image: multipaper-init:0.0.1
-          command: [ "/bin/sh", "-c", "/usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/multipaper.yml && cp /tmp/spigot/* /spigot && cp /tmp/airplane/* /ext && cp /tmp/pufferfish/* /ext" ]
+          command: [ "/bin/sh", "-c", "cp /tmp/multipaper/* /multipaper/data && /usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/data/multipaper.yml" ]
           volumeMounts:
-            - name: multipaper-config
+            - name: multipaper-configs
               mountPath: /tmp/multipaper
-            - name: multipaper-config-data
-              mountPath: /multipaper
-            - name: multipaper-spigot-config
-              mountPath: /tmp/spigot
-            - name: multipaper-spigot-config-data
-              mountPath: /spigot
-            - name: multipaper-pufferfish-config
-              mountPath: /tmp/pufferfish
-            - name: multipaper-airplane-config
-              mountPath: /tmp/airplane
-            - name: multipaper-ext-config-data
-              mountPath: /ext
+              readOnly: true
+            - name: multipaper-configs-data
+              mountPath: /multipaper/data
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
@@ -75,43 +66,19 @@ spec:
             timeoutSeconds: {{ .Values.server.probes.livenessProbe.timeoutSeconds }}
           {{- end }}
           volumeMounts:
-            - name: multipaper-config-data
-              mountPath: /multipaper/multipaper.yml
-              subPath: multipaper.yml
-            - name: multipaper-spigot-config
-              mountPath: /multipaper/eula.txt
-              subPath: eula.txt
-            - name: multipaper-spigot-config-data
-              mountPath: /multipaper/spigot.yml
-              subPath: spigot.yml
-            - name: multipaper-spigot-config-data
-              mountPath: /multipaper/paper.yml
-              subPath: paper.yml
-            - name: multipaper-spigot-config-data
-              mountPath: /multipaper/bukkit.yml
-              subPath: bukkit.yml
-            - name: multipaper-ext-config-data
-              mountPath: /multipaper/pufferfish.yml
-              subPath: pufferfish.yml
-            - name: multipaper-ext-config-data
-              mountPath: /multipaper/airplane.yml
-              subPath: airplane.yml
+            - name: multipaper-configs-data
+              mountPath: /multipaper/data
       volumes:
-        - name: multipaper-config
-          configMap:
-            name: {{ template "multipaper-helm.fullname" . }}-config
-        - name: multipaper-config-data
-          emptyDir: {}
-        - name: multipaper-spigot-config
-          configMap:
-            name: {{ template "multipaper-helm.fullname" . }}-spigot
-        - name: multipaper-spigot-config-data
-          emptyDir: {}
-        - name: multipaper-pufferfish-config
-          configMap:
-            name: {{ template "multipaper-helm.fullname" . }}-pufferfish
-        - name: multipaper-airplane-config
-          configMap:
-            name: {{ template "multipaper-helm.fullname" . }}-airplane
-        - name: multipaper-ext-config-data
+        - name: multipaper-configs
+          projected:
+            sources:
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-pufferfish
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-airplane
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-spigot
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-config
+        - name: multipaper-configs-data
           emptyDir: {}
