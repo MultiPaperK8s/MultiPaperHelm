@@ -10,6 +10,14 @@ global:
 
 # MultiPaper master server
 master:
+  # The id of the group that will be running the master server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  gid: 1001
+  # The id of the user that will be running the master server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  uid: 1001
 
   # Built-in Proxy settings
   proxy:
@@ -116,6 +124,15 @@ master:
 
 # MultiPaper server
 server:
+  # The id of the group that will be running the MultiPaper server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  gid: 1001
+  # The id of the user that will be running the MultiPaper server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  uid: 1001
+
   image:
     repository: "multipaper"
     # Tag of the Docker image to be used.
