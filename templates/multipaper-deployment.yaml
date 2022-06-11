@@ -78,7 +78,13 @@ spec:
               - configMap:
                   name: {{ template "multipaper-helm.fullname" . }}-airplane
               - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-paper
+              - configMap:
                   name: {{ template "multipaper-helm.fullname" . }}-spigot
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-bukkit
+              - configMap:
+                  name: {{ template "multipaper-helm.fullname" . }}-minecraft
               - configMap:
                   name: {{ template "multipaper-helm.fullname" . }}-config
         - name: multipaper-configs-data
