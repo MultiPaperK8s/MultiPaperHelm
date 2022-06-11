@@ -21,7 +21,7 @@ data:
     interServerCompressionThreshold: 0
     interServerConsolidationDelay: 0
     syncScoreboards: true
-    logFileSyncing: true
+    logFileSyncing: false
     syncJsonFiles: false
     filesToNotSync:
     - plugins/bStats
