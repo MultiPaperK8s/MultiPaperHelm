@@ -29,7 +29,7 @@ data:
     max-tick-time=60000
     use-native-transport=true
     max-players=20
-    online-mode=false
+    online-mode=true
     enable-status=true
     allow-flight=false
     broadcast-rcon-to-ops=true
@@ -67,3 +67,8 @@ data:
   whitelist.json: |
 
   ops.json: |
+
+  banned-players.json: |
+
+  banned-ips.json: |
+    
