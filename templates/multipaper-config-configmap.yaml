@@ -22,7 +22,7 @@ data:
     interServerConsolidationDelay: 0
     syncScoreboards: true
     logFileSyncing: true
-    syncJsonFiles: true
+    syncJsonFiles: false
     filesToNotSync:
     - plugins/bStats
     bungeecordName: $HOSTNAME
