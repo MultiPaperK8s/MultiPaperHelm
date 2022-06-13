@@ -1,0 +1,17 @@
+{{- if .Values.velocity.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-velocity
+  labels:
+    {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.velocity.service.type }}
+  ports:
+    - port: {{ .Values.velocity.service.port }}
+      targetPort: {{ .Values.velocity.service.targetPort }}
+      protocol: TCP
+      name: proxy
+  selector:
+    {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 4 }}
+{{- end }}

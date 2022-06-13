@@ -1,0 +1,59 @@
+{{- if .Values.velocity.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-velocity
+  labels:
+    {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ template "multipaper-helm.serviceAccount.name" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{ .Values.velocity.uid }}
+        runAsGroup: {{ .Values.velocity.gid }}
+        fsGroup: {{ .Values.velocity.gid }}
+      containers:
+        - name: {{ .Chart.Name }}-velocity
+          image: "{{ .Values.velocity.image.repository }}:{{ .Values.velocity.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.velocity.image.pullPolicy }}
+          ports:
+            - name: proxy
+              containerPort: {{ .Values.velocity.service.port }}
+              protocol: TCP
+          {{- if .Values.velocity.probes.readinessProbe.startupProbe }}
+          startupProbe:
+            tcpSocket:
+              port: proxy
+            failureThreshold: {{ .Values.velocity.probes.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.velocity.probes.startupProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.velocity.probes.readinessProbe.timeoutSecond }}
+          readinessProbe:
+            tcpSocket:
+              port: proxy
+            initialDelaySeconds: {{ .Values.velocity.probes.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.velocity.probes.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.velocity.probes.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.velocity.probes.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.velocity.probes.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.velocity.probes.livenessProbe.timeoutSecond }}
+          livenessProbe:
+            tcpSocket:
+              port: proxy
+            initialDelaySeconds: {{ .Values.velocity.probes.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.velocity.probes.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.velocity.probes.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.velocity.probes.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.velocity.probes.livenessProbe.timeoutSeconds }}
+          {{- end }}
+{{- end }}

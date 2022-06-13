@@ -8,6 +8,88 @@ global:
     # When empty the full name of the Helm deployment would be used.
     name: ""
 
+# Velocity
+velocity:
+  # Whether or not Velocity is enabled
+  enabled: true
+  # The id of the group that will be running the Velocity server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  gid: 1001
+  # The id of the user that will be running the Velocity server process.
+  # By default this is 1001, multipaper user.
+  # Image dependant.
+  uid: 1001
+
+  image:
+    repository: "velocity"
+    # Tag of the Docker image to be used.
+    # Defaults to the Chart's app version if left blank.
+    tag: "3.1.1-98"
+    pullPolicy: IfNotPresent
+
+  resources: {}
+  # resources:
+  #   requests:
+  #     memory: 256Mi
+  #     cpu: 250m
+  #   limits:
+  #     memory: 256Mi
+  #     cpu: 250m
+
+  service:
+    # Type can be ClusterIP or NodePort
+    type: NodePort
+
+    # Port on which the Velocity server is listening.
+    port: 25577
+    # Target port to which the service should be mapped to.
+    targetPort: 25577
+
+  # Section for startup, readiness and liveness probes
+  probes:
+
+    # Probe used to weed out slow pods
+    startupProbe:
+      enabled: true
+      # When a probe fails, Kubernetes will try failureThreshold times before giving up.
+      # After this it will restart the container.
+      failureThreshold: 3
+      # How often (in seconds) to perform the probe.
+      periodSeconds: 20
+
+    # Probe used to define whether a pod is ready or not
+    readinessProbe:
+      enabled: true
+      # Number of seconds after the container has started before liveness or readiness probes are initiated.
+      initialDelaySeconds: 40
+      # How often (in seconds) to perform the probe.
+      periodSeconds: 5
+      # When a probe fails, Kubernetes will try failureThreshold times before giving up.
+      # After this it will mark the Pod as Unready
+      failureThreshold: 5
+      # Minimum consecutive successes for the probe to be considered successful after having failed.
+      successThreshold: 2
+      # Number of seconds after which the probe times out and ultimately fails.
+      timeoutSeconds: 1
+
+    # Probe used to verify whether a pod is still running succesfully
+    livenessProbe:
+      enabled: true
+      # Number of seconds after the container has started before liveness or readiness probes are initiated.
+      initialDelaySeconds: 40
+      # How often (in seconds) to perform the probe.
+      periodSeconds: 5
+      # When a probe fails, Kubernetes will try failureThreshold times before giving up.
+      # After this it will restart the container.
+      failureThreshold: 5
+      # Minimum consecutive successes for the probe to be considered successful after having failed.
+      successThreshold: 1
+      # Number of seconds after which the probe times out and ultimately fails.
+      timeoutSeconds: 1
+
+  labels: {}
+
 # MultiPaper master server
 master:
   # The id of the group that will be running the master server process.
@@ -21,7 +103,7 @@ master:
 
   # Built-in Proxy settings
   proxy:
-    enabled: true
+    enabled: false
     service:
       # Type can be ClusterIP or NodePort
       type: NodePort
@@ -41,6 +123,10 @@ master:
   # Configure the Update Strategy Type for the StatefulSet
   # See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   updateStrategyType: "RollingUpdate"
+
+  pdb:
+    enabled: false
+    minAvailable: 1
 
   resources: {}
   # resources:
