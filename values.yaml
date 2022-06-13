@@ -28,14 +28,11 @@ velocity:
     tag: "3.1.1-98"
     pullPolicy: IfNotPresent
 
-  resources: {}
-  # resources:
-  #   requests:
-  #     memory: 256Mi
-  #     cpu: 250m
-  #   limits:
-  #     memory: 256Mi
-  #     cpu: 250m
+  resources:
+    requests:
+      memory: 1Gi
+    limits:
+      memory: 1Gi
 
   service:
     # Type can be ClusterIP or NodePort
