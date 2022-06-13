@@ -2,17 +2,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "multipaper-helm.fullname" . }}-velocity
+  name: {{ template "multipaper-helm.fullname" . }}-velocity-proxy
   labels:
     {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
-  clusterIP: None
+  type: {{ .Values.velocity.proxy.service.type }}
   ports:
-    - port: {{ .Values.velocity.master.service.port }}
-      targetPort: {{ .Values.velocity.master.service.targetPort }}
+    - port: {{ .Values.velocity.proxy.service.port }}
+      targetPort: {{ .Values.velocity.proxy.service.targetPort }}
       protocol: TCP
-      name: master
+      name: proxy
   selector:
     {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 4 }}
 {{- end }}

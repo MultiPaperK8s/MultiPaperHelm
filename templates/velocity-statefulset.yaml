@@ -1,12 +1,13 @@
 {{- if .Values.velocity.enabled }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ template "multipaper-helm.fullname" . }}-velocity
   labels:
     {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  serviceName: {{ template "multipaper-helm.fullname" . }}-velocity
   selector:
     matchLabels:
       {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 6 }}
@@ -26,9 +27,16 @@ spec:
           image: "{{ .Values.velocity.image.repository }}:{{ .Values.velocity.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.velocity.image.pullPolicy }}
           ports:
-            - name: proxy
-              containerPort: {{ .Values.velocity.service.port }}
+            - name: master
+              containerPort: {{ .Values.velocity.master.service.port }}
               protocol: TCP
+            - name: proxy
+              containerPort: {{ .Values.velocity.proxy.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: velocity-config
+            mountPath: /multipaper/plugins/multipaper-velocity/config.toml
+            subPath: config.toml
           {{- if .Values.velocity.probes.readinessProbe.startupProbe }}
           startupProbe:
             tcpSocket:
@@ -56,4 +64,13 @@ spec:
             successThreshold: {{ .Values.velocity.probes.livenessProbe.successThreshold }}
             timeoutSeconds: {{ .Values.velocity.probes.livenessProbe.timeoutSeconds }}
           {{- end }}
+      volumes:
+      - name: velocity-config
+        configMap:
+          # Provide the name of the ConfigMap containing the files you want
+          # to add to the container
+          name: {{ template "multipaper-helm.fullname" . }}-velocity
+  {{- if .Values.global.persistent }}
+  volumeClaimTemplates: {{ .Values.global.persistent.claimTemplates | toYaml | nindent 4}}
+  {{- end }}
 {{- end }}

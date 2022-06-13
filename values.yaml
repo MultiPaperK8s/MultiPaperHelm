@@ -8,6 +8,26 @@ global:
     # When empty the full name of the Helm deployment would be used.
     name: ""
 
+  # Own control over persistent volumes.
+  # Normally this would hold non arbitrary values that are templated,
+  # but since Minecraft can have other worlds, we decided not to.
+  persistent:
+    # Defines Volumes (https://kubernetes.io/docs/concepts/storage/volume) to be linked to the master.
+    # Persists all the files synced to the master.
+    volumeMounts:
+      - name: "data"
+        mountPath: "/multipaper/plugins/multipaper-velocity/world"
+    # Template for Persistent Volume Claims (https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # This setup automatically creates Persistent Volumes for you, if no Persistent Volume is found.
+    claimTemplates:
+      - metadata:
+          name: "data"
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: null
+          resources:
+            requests:
+              storage: "30Gi"
 # Velocity
 velocity:
   # Whether or not Velocity is enabled
@@ -34,14 +54,22 @@ velocity:
     limits:
       memory: 1Gi
 
-  service:
-    # Type can be ClusterIP or NodePort
-    type: NodePort
+  master:
+    service:
+      # Port on which the Velocity server is listening.
+      port: 35353
+      # Target port to which the service should be mapped to.
+      targetPort: 35353
 
-    # Port on which the Velocity server is listening.
-    port: 25577
-    # Target port to which the service should be mapped to.
-    targetPort: 25577
+  proxy:
+    service:
+      # Type can be ClusterIP or NodePort
+      type: NodePort
+
+      # Port on which the Velocity server is listening.
+      port: 25577
+      # Target port to which the service should be mapped to.
+      targetPort: 25577
 
   # Section for startup, readiness and liveness probes
   probes:
@@ -100,7 +128,6 @@ master:
 
   # Built-in Proxy settings
   proxy:
-    enabled: false
     service:
       # Type can be ClusterIP or NodePort
       type: NodePort
@@ -181,27 +208,6 @@ master:
       successThreshold: 1
       # Number of seconds after which the probe times out and ultimately fails.
       timeoutSeconds: 1
-
-  # Own control over persistent volumes.
-  # Normally this would hold non arbitrary values that are templated,
-  # but since Minecraft can have other worlds, we decided not to.
-  persistent:
-    # Defines Volumes (https://kubernetes.io/docs/concepts/storage/volume) to be linked to the master.
-    # Persists all the files synced to the master.
-    volumeMounts:
-      - name: "data"
-        mountPath: "/multipaper/data"
-    # Template for Persistent Volume Claims (https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-    # This setup automatically creates Persistent Volumes for you, if no Persistent Volume is found.
-    claimTemplates:
-      - metadata:
-          name: "data"
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: null
-          resources:
-            requests:
-              storage: "30Gi"
   
   labels: {}
 

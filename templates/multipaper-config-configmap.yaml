@@ -12,8 +12,12 @@ data:
     # Docs: https://github.com/PureGero/MultiPaper/blob/main/MULTIPAPER_YAML.md
 
     useLocalPlayerCountForServerIsFullKick: false
+    {{- if .Values.velocity.enabled }}
     multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-master:{{ .Values.master.service.targetPort }}
-    advertiseToBuiltInProxy: {{ .Values.master.proxy.enabled }}
+    {{- else }}
+    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-velocity:{{ .Values.velocity.master.service.targetPort }}
+    {{- end }}
+    advertiseToBuiltInProxy: {{ .Values.velocity.enabled }}
     filesToSyncOnStartup:
     filesToSyncInRealTime:
     filesToOnlyUploadOnServerStop:
@@ -25,4 +29,8 @@ data:
     syncJsonFiles: false
     filesToNotSync:
     - plugins/bStats
+    {{- if .Values.velocity.enabled }}
     bungeecordName: $HOSTNAME
+    {{- else }}
+    bungeecordName: event
+    {{- end }}
