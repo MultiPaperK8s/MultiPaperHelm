@@ -1,0 +1,12 @@
+{{- if .Values.velocity.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-velocity-multipaper
+  labels:
+    {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
+data:
+  config.toml: | 
+    port = {{ .Values.velocity.master.service.targetPort }}
+    balance-nodes = true
+{{- end }}

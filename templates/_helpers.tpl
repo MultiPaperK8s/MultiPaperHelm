@@ -97,3 +97,22 @@ Selector labels server
 app.kubernetes.io/name: {{ include "multipaper-helm.name" . }}-velocity
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Whether or not online mode should be used.
+*/}}
+{{- define "multipaper-helm.onlineMode" -}}
+{{- if .Values.velocity.enabled }}
+{{- printf "false" }}
+{{- else }}
+{{- printf "true" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Whether or not to support Bungeecord forwarding.
+TODO: Add the option to disable this based on the forwarding setting. Currently this is only modern.
+*/}}
+{{- define "multipaper-helm.bungeecord" -}}
+{{- printf "%s" (include "multipaper-helm.onlineMode" .) -}}
+{{- end }}

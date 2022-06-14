@@ -35,7 +35,10 @@ spec:
               protocol: TCP
           volumeMounts:
           - name: velocity-config
-            mountPath: /multipaper/plugins/multipaper-velocity/config.toml
+            mountPath: /multipaper/data/velocity.toml
+            subPath: velocity.toml
+          - name: multipaper-config
+            mountPath: /multipaper/data/plugins/multipaper-velocity/config.toml
             subPath: config.toml
           {{- if .Values.velocity.probes.readinessProbe.startupProbe }}
           startupProbe:
@@ -67,10 +70,8 @@ spec:
       volumes:
       - name: velocity-config
         configMap:
-          # Provide the name of the ConfigMap containing the files you want
-          # to add to the container
           name: {{ template "multipaper-helm.fullname" . }}-velocity
-  {{- if .Values.global.persistent }}
-  volumeClaimTemplates: {{ .Values.global.persistent.claimTemplates | toYaml | nindent 4}}
-  {{- end }}
+      - name: multipaper-config
+        configMap:
+          name: {{ template "multipaper-helm.fullname" . }}-velocity-multipaper
 {{- end }}

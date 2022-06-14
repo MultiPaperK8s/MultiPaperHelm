@@ -13,9 +13,9 @@ data:
 
     useLocalPlayerCountForServerIsFullKick: false
     {{- if .Values.velocity.enabled }}
-    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-master:{{ .Values.master.service.targetPort }}
+    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-velocity-master:{{ .Values.velocity.master.service.targetPort }}
     {{- else }}
-    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-velocity:{{ .Values.velocity.master.service.targetPort }}
+    multipaperMasterAddress: {{ template "multipaper-helm.fullname" . }}-master:{{ .Values.master.service.targetPort }}
     {{- end }}
     advertiseToBuiltInProxy: {{ .Values.velocity.enabled }}
     filesToSyncOnStartup:
@@ -32,5 +32,5 @@ data:
     {{- if .Values.velocity.enabled }}
     bungeecordName: $HOSTNAME
     {{- else }}
-    bungeecordName: event
+    bungeecordName: {{ template "multipaper-helm.fullname" . }}
     {{- end }}

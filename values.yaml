@@ -8,30 +8,15 @@ global:
     # When empty the full name of the Helm deployment would be used.
     name: ""
 
-  # Own control over persistent volumes.
-  # Normally this would hold non arbitrary values that are templated,
-  # but since Minecraft can have other worlds, we decided not to.
-  persistent:
-    # Defines Volumes (https://kubernetes.io/docs/concepts/storage/volume) to be linked to the master.
-    # Persists all the files synced to the master.
-    volumeMounts:
-      - name: "data"
-        mountPath: "/multipaper/plugins/multipaper-velocity/world"
-    # Template for Persistent Volume Claims (https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-    # This setup automatically creates Persistent Volumes for you, if no Persistent Volume is found.
-    claimTemplates:
-      - metadata:
-          name: "data"
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: null
-          resources:
-            requests:
-              storage: "30Gi"
 # Velocity
 velocity:
   # Whether or not Velocity is enabled
   enabled: true
+
+  # Secret used by when forwarding to another server.
+  # !! CHANGE THIS VALUE !!
+  secret: "sdfslKkdsdf"
+
   # The id of the group that will be running the Velocity server process.
   # By default this is 1001, multipaper user.
   # Image dependant.
@@ -42,17 +27,19 @@ velocity:
   uid: 1001
 
   image:
-    repository: "velocity"
+    repository: "remcospigot/velocity"
     # Tag of the Docker image to be used.
     # Defaults to the Chart's app version if left blank.
-    tag: "3.1.1-98"
-    pullPolicy: IfNotPresent
+    tag: "3.1.2-SNAPSHOT-153"
+    pullPolicy: Always
 
   resources:
     requests:
-      memory: 1Gi
+      cpu: 2
+      memory: 4Gi
     limits:
-      memory: 1Gi
+      cpu: 4
+      memory: 4Gi
 
   master:
     service:
@@ -148,9 +135,26 @@ master:
   # See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   updateStrategyType: "RollingUpdate"
 
-  pdb:
-    enabled: false
-    minAvailable: 1
+  # Own control over persistent volumes.
+  # Normally this would hold non arbitrary values that are templated,
+  # but since Minecraft can have other worlds, we decided not to.
+  persistent:
+    # Defines Volumes (https://kubernetes.io/docs/concepts/storage/volume) to be linked to the master.
+    # Persists all the files synced to the master.
+    volumeMounts:
+      - name: "data"
+        mountPath: "/multipaper/plugins/multipaper-velocity/world"
+    # Template for Persistent Volume Claims (https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # This setup automatically creates Persistent Volumes for you, if no Persistent Volume is found.
+    claimTemplates:
+      - metadata:
+          name: "data"
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: null
+          resources:
+            requests:
+              storage: "30Gi"
 
   resources: {}
   # resources:
@@ -169,7 +173,7 @@ master:
 
   # Section for startup, readiness and liveness probes
   probes:
-
+    
     # Probe used to weed out slow pods
     startupProbe:
       enabled: true
