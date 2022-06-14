@@ -32,7 +32,7 @@ master:
       targetPort: 25565
   
   image:
-    repository: "multipaper-master"
+    repository: "remcospigot/multipaper-master"
     # Tag of the Docker image to be used.
     # Defaults to the Chart's app version if left blank.
     tag: "2.8.4"
@@ -46,10 +46,10 @@ master:
   # resources:
   #   requests:
   #     memory: 256Mi
-  #     cpu: 250m
+  #     cpu: 2
   #   limits:
-  #     memory: 256Mi
-  #     cpu: 250m
+  #     memory: 512Mi
+  #     cpu: 4
 
   service:
     # Port on which the MultiPaper master server is listening.
@@ -134,7 +134,7 @@ server:
   uid: 1001
 
   image:
-    repository: "multipaper"
+    repository: "remcospigot/multipaper"
     # Tag of the Docker image to be used.
     # Defaults to the Chart's app version if left blank.
     tag: "1.18.2-65"
@@ -143,11 +143,11 @@ server:
   resources: {}
   # resources:
   #   requests:
-  #     memory: 256Mi
-  #     cpu: 250m
+  #     memory: 10Gi
+  #     cpu: 6
   #   limits:
-  #     memory: 256Mi
-  #     cpu: 250m
+  #     memory: 10Gi
+  #     cpu: 6
 
   service:
     # Port on which the MultiPaper master server is listening.
