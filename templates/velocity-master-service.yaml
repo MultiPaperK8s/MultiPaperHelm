@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "multipaper-helm.fullname" . }}-velocity
+  name: {{ template "multipaper-helm.fullname" . }}-velocity-master
   labels:
     {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
 spec:
