@@ -1,3 +1,4 @@
+{{- if not .Values.velocity.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -33,9 +34,11 @@ spec:
             - name: server
               containerPort: {{ .Values.master.service.port }}
               protocol: TCP
+            {{- if .Values.master.proxy.enabled }}
             - name: proxy
               containerPort: {{ .Values.master.proxy.service.port }}
               protocol: TCP
+            {{- end }}
           volumeMounts: {{ .Values.master.persistent.volumeMounts | toYaml | nindent 16 }}
           {{- if .Values.master.probes.readinessProbe.startupProbe }}
           startupProbe:
@@ -67,3 +70,4 @@ spec:
   {{- if .Values.master.persistent }}
   volumeClaimTemplates: {{ .Values.master.persistent.claimTemplates | toYaml | nindent 4}}
   {{- end }}
+{{- end }}

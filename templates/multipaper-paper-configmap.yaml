@@ -74,9 +74,9 @@ data:
         tab-spam-limit: 500
       bungee-online-mode: true
       velocity-support:
-        enabled: false
-        online-mode: false
-        secret: ''
+        enabled: {{ .Values.velocity.enabled }}
+        online-mode: true
+        secret: {{ .Values.velocity.secret | quote }}
       max-joins-per-tick: 3
       player-auto-save-rate: -1
       max-player-auto-save-per-tick: -1
