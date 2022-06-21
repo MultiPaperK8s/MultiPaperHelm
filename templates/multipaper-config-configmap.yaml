@@ -30,7 +30,7 @@ data:
     filesToNotSync:
     - plugins/bStats
     {{- if .Values.velocity.enabled }}
-    bungeecordName: $HOSTNAME
-    {{- else }}
     bungeecordName: {{ template "multipaper-helm.fullname" . }}
+    {{- else }}
+    bungeecordName: $HOSTNAME
     {{- end }}
