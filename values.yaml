@@ -35,7 +35,7 @@ master:
     repository: "remcospigot/multipaper-master"
     # Tag of the Docker image to be used.
     # Defaults to the Chart's app version if left blank.
-    tag: "2.8.4"
+    tag: "2.8.8"
     pullPolicy: IfNotPresent
 
   # Configure the Update Strategy Type for the StatefulSet
@@ -137,7 +137,7 @@ server:
     repository: "remcospigot/multipaper"
     # Tag of the Docker image to be used.
     # Defaults to the Chart's app version if left blank.
-    tag: "1.18.2-65"
+    tag: "1.18.2-95"
     pullPolicy: IfNotPresent
 
   resources: {}

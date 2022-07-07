@@ -22,7 +22,7 @@ spec:
         fsGroup: {{ .Values.server.gid }}
       initContainers:
         - name: copy-configuration
-          image: multipaper-init:0.0.1
+          image: remcospigot/multipaper-init:0.0.1
           command: [ "/bin/sh", "-c", "cp /tmp/multipaper/* /multipaper/data && /usr/local/bin/envsubst < /tmp/multipaper/multipaper.yml > /multipaper/data/multipaper.yml" ]
           volumeMounts:
             - name: multipaper-configs
