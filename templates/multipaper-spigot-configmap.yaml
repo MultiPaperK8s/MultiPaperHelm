@@ -39,7 +39,7 @@ data:
       log-named-deaths: true
       save-user-cache-on-stop-only: false
       sample-count: 12
-      bungeecord: {{ .Values.master.proxy.enabled }}
+      bungeecord: {{ template "multipaper-helm.bungeecord" . }}
     commands:
       log: true
       tab-complete: 0

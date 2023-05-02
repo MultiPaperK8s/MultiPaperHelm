@@ -1,0 +1,18 @@
+{{- if .Values.velocity.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "multipaper-helm.fullname" . }}-velocity-master
+  labels:
+    {{- include "multipaper-helm.velocity.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: {{ .Values.velocity.master.service.port }}
+      targetPort: {{ .Values.velocity.master.service.targetPort }}
+      protocol: TCP
+      name: master
+  selector:
+    {{- include "multipaper-helm.velocity.selectorLabels" . | nindent 4 }}
+{{- end }}

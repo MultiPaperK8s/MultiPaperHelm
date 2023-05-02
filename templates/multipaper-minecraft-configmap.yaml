@@ -29,7 +29,7 @@ data:
     max-tick-time=60000
     use-native-transport=true
     max-players=20
-    online-mode=true
+    online-mode={{ template "multipaper-helm.onlineMode" . }}
     enable-status=true
     allow-flight=false
     broadcast-rcon-to-ops=true
